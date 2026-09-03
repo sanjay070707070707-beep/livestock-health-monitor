@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Livestock Health Monitor</title>
+
+    <link
+            rel="icon"
+            type="image/png"
+            href="/images/livestock-logo.png"
+    >
+
+    <link
+            rel="stylesheet"
+            href="/style.css"
+    >
+
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+</head>
+
+<body>
+
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+<div class="background-glow glow-three"></div>
+
+
+<header class="main-header">
+
+    <div class="header-content">
+
+        <div class="brand">
+
+            <img
+                    src="/images/livestock-logo.png"
+                    alt="Livestock Health Monitor Logo"
+                    class="brand-logo"
+            >
+
+            <div class="brand-text">
+
+                <h1>
+                    Livestock Health Monitor
+                </h1>
+
+                <p>
+                    Smart Animal Health & Risk Monitoring System
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-status">
+
+            <span class="status-dot"></span>
+
+            <span>
+                System Online
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="hero-section">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                🐄 SMART LIVESTOCK CARE
+            </span>
+
+            <h2>
+                Monitor Animal Health.
+                <span>Prevent Risk.</span>
+            </h2>
+
+            <p>
+                Register livestock, monitor health,
+                identify emerging risks and maintain
+                complete animal health history.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DASHBOARD
+         ===================================================== -->
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    LIVE OVERVIEW
+                </span>
+
+                <h2>
+                    Health Dashboard
+                </h2>
+
+            </div>
+
+
+            <div class="live-indicator">
+
+                <span class="status-dot"></span>
+
+                Live Monitoring
+
+            </div>
+
+        </div>
+
+
+        <div class="cards">
+
+
+            <div class="card stat-card">
+
+                <div class="stat-icon livestock-icon">
+                    🐄
+                </div>
+
+                <div class="stat-content">
+
+                    <p>
+                        Total Livestock
+                    </p>
+
+                    <h2 id="totalLivestock">
+                        0
+                    </h2>
+
+                    <span class="stat-description">
+                        Registered animals
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card stat-card">
+
+                <div class="stat-icon health-icon">
+                    🩺
+                </div>
+
+                <div class="stat-content">
+
+                    <p>
+                        Health Records
+                    </p>
+
+                    <h2 id="totalRecords">
+                        0
+                    </h2>
+
+                    <span class="stat-description">
+                        Health assessments
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card stat-card">
+
+                <div class="stat-icon risk-icon">
+                    🚨
+                </div>
+
+                <div class="stat-content">
+
+                    <p>
+                        High Risk
+                    </p>
+
+                    <h2 id="highRisk">
+                        0
+                    </h2>
+
+                    <span class="stat-description">
+                        Need attention
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card stat-card mortality-stat">
+
+                <div class="stat-icon">
+                    ☠️
+                </div>
+
+                <div class="stat-content">
+
+                    <p>
+                        Mortality Reports
+                    </p>
+
+                    <h2 id="mortalityCount">
+                        0
+                    </h2>
+
+                    <span class="stat-description">
+                        Reported deaths
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HEALTH RISK ALERTS
+         ===================================================== -->
+
+    <section class="risk-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ATTENTION REQUIRED
+                </span>
+
+                <h2>
+                    🚨 Health Risk Alerts
+                </h2>
+
+            </div>
+
+
+            <div class="live-indicator">
+
+                <span class="status-dot danger-dot"></span>
+
+                Live Monitoring
+
+            </div>
+
+        </div>
+
+
+        <div
+                id="riskAlerts"
+                class="risk-alerts"
+        >
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <p>
+                    Loading risk alerts...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         OUTBREAK SURVEILLANCE
+         ===================================================== -->
+
+    <section class="outbreak-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    EARLY WARNING SYSTEM
+                </span>
+
+                <h2>
+                    🚨 Outbreak Surveillance
+                </h2>
+
+            </div>
+
+
+            <div class="live-indicator">
+
+                <span class="status-dot danger-dot"></span>
+
+                Live Detection
+
+            </div>
+
+        </div>
+
+
+        <div
+                id="outbreakAlerts"
+                class="outbreak-alerts"
+        >
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <p>
+                    Checking for possible outbreaks...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         GEOSPATIAL SURVEILLANCE
+         ===================================================== -->
+
+    <section class="map-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    GEOSPATIAL SURVEILLANCE
+                </span>
+
+                <h2>
+                    🗺️ Livestock Health Risk Map
+                </h2>
+
+                <p class="map-description">
+                    View livestock locations and identify
+                    high-risk and at-risk areas across the
+                    monitored region.
+                </p>
+
+            </div>
+
+
+            <div class="live-indicator">
+
+                <span class="status-dot"></span>
+
+                Live Mapping
+
+            </div>
+
+        </div>
+
+
+        <div class="map-summary">
+
+
+            <div class="map-stat">
+
+                <span class="map-stat-label">
+                    Animals Mapped
+                </span>
+
+                <strong id="mappedAnimals">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="map-stat">
+
+                <span class="map-stat-label">
+                    High Risk Locations
+                </span>
+
+                <strong id="mappedHighRisk">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="map-stat">
+
+                <span class="map-stat-label">
+                    At Risk Locations
+                </span>
+
+                <strong id="mappedAtRisk">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="map-stat">
+
+                <span class="map-stat-label">
+                    Villages Covered
+                </span>
+
+                <strong id="mappedVillages">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="map-legend">
+
+            <span>
+
+                <i class="legend-dot legend-healthy"></i>
+
+                Healthy
+
+            </span>
+
+
+            <span>
+
+                <i class="legend-dot legend-at-risk"></i>
+
+                At Risk
+
+            </span>
+
+
+            <span>
+
+                <i class="legend-dot legend-high-risk"></i>
+
+                High Risk
+
+            </span>
+
+        </div>
+
+
+        <div
+                id="livestockMap"
+                class="livestock-map"
+        ></div>
+
+
+        <div
+                id="mapMessage"
+                class="map-message"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         VACCINATION
+         ===================================================== -->
+
+    <section class="vaccination-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    PREVENTIVE HEALTH
+                </span>
+
+                <h2>
+                    💉 Vaccination Coverage
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="vaccination-dashboard">
+
+
+            <div class="vaccination-card">
+
+                <div class="vaccination-icon">
+                    💉
+                </div>
+
+                <div>
+
+                    <span>
+                        Vaccinated
+                    </span>
+
+                    <strong id="vaccinatedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="vaccination-card">
+
+                <div class="vaccination-icon">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <span>
+                        Unvaccinated
+                    </span>
+
+                    <strong id="unvaccinatedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="vaccination-card coverage-card">
+
+                <div class="coverage-header">
+
+                    <span>
+                        Coverage
+                    </span>
+
+                    <strong>
+                        <span id="vaccinationCoverage">
+                            0
+                        </span>%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                            id="vaccinationProgress"
+                            class="progress-fill"
+                    ></div>
+
+                </div>
+
+
+                <p>
+                    Overall livestock vaccination coverage
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         REGISTER LIVESTOCK
+         ===================================================== -->
+
+    <section class="form-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ANIMAL REGISTRATION
+                </span>
+
+                <h2>
+                    🐄 Register Livestock
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <form id="livestockForm">
+
+
+            <div class="form-group">
+
+                <label for="tagNumber">
+                    Tag Number
+                </label>
+
+                <input
+                        type="text"
+                        id="tagNumber"
+                        placeholder="Example: COW001"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="animalType">
+                    Animal Type
+                </label>
+
+                <input
+                        type="text"
+                        id="animalType"
+                        placeholder="Example: Cow"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="breed">
+                    Breed
+                </label>
+
+                <input
+                        type="text"
+                        id="breed"
+                        placeholder="Example: Jersey"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="age">
+                    Age
+                </label>
+
+                <input
+                        type="number"
+                        id="age"
+                        placeholder="Example: 4"
+                        min="0"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="gender">
+                    Gender
+                </label>
+
+                <select
+                        id="gender"
+                        required
+                >
+
+                    <option value="">
+                        Select gender
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="village">
+                    Village
+                </label>
+
+                <input
+                        type="text"
+                        id="village"
+                        placeholder="Example: Kovilpatti"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="block">
+                    Block
+                </label>
+
+                <input
+                        type="text"
+                        id="block"
+                        placeholder="Example: Kovilpatti"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="district">
+                    District
+                </label>
+
+                <input
+                        type="text"
+                        id="district"
+                        placeholder="Example: Thoothukudi"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="latitude">
+                    Latitude
+                </label>
+
+                <input
+                        type="number"
+                        id="latitude"
+                        placeholder="Example: 9.1715"
+                        step="any"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="longitude">
+                    Longitude
+                </label>
+
+                <input
+                        type="number"
+                        id="longitude"
+                        placeholder="Example: 77.8699"
+                        step="any"
+                >
+
+            </div>
+
+
+            <div
+                    id="livestockMessage"
+                    class="message"
+            ></div>
+
+
+            <button
+                    type="submit"
+                    class="primary-button"
+            >
+                🐄 Register Livestock
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =====================================================
+         HEALTH ANALYSIS
+         ===================================================== -->
+
+    <section class="form-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    HEALTH ANALYSIS
+                </span>
+
+                <h2>
+                    🩺 Analyze Animal Health
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <form id="healthForm">
+
+
+            <div class="form-group">
+
+                <label for="livestockSelect">
+                    Select Livestock
+                </label>
+
+                <select
+                        id="livestockSelect"
+                        required
+                >
+
+                    <option value="">
+                        Select an animal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="temperature">
+                    Temperature (°C)
+                </label>
+
+                <input
+                        type="number"
+                        id="temperature"
+                        placeholder="Example: 38.5"
+                        step="0.1"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="symptoms">
+                    Symptoms
+                </label>
+
+                <textarea
+                        id="symptoms"
+                        placeholder="Example: coughing, loss of appetite"
+                        required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="vaccinationStatus">
+                    Vaccination Status
+                </label>
+
+                <select id="vaccinationStatus">
+
+                    <option value="NOT PROVIDED">
+                        Select vaccination status
+                    </option>
+
+                    <option value="UP TO DATE">
+                        Up to date
+                    </option>
+
+                    <option value="PARTIALLY VACCINATED">
+                        Partially vaccinated
+                    </option>
+
+                    <option value="NOT VACCINATED">
+                        Not vaccinated
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="treatment">
+                    Treatment / Medication
+                </label>
+
+                <textarea
+                        id="treatment"
+                        placeholder="Example: Antibiotic treatment given"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="reportedBy">
+                    Reported By
+                </label>
+
+                <select id="reportedBy">
+
+                    <option value="Farmer">
+                        Farmer
+                    </option>
+
+                    <option value="Field Worker">
+                        Field Worker
+                    </option>
+
+                    <option value="Veterinarian">
+                        Veterinarian
+                    </option>
+
+                    <option value="Para-Veterinary Worker">
+                        Para-Veterinary Worker
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="mortalityReported">
+                    Mortality Report
+                </label>
+
+                <select id="mortalityReported">
+
+                    <option value="false">
+                        No
+                    </option>
+
+                    <option value="true">
+                        Yes - Animal died
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="mortalityReason">
+                    Mortality / Death Reason
+                </label>
+
+                <textarea
+                        id="mortalityReason"
+                        placeholder="Example: Sudden death after high fever"
+                ></textarea>
+
+            </div>
+
+
+            <div
+                    id="healthMessage"
+                    class="message"
+            ></div>
+
+
+            <button
+                    type="submit"
+                    class="primary-button"
+            >
+                🩺 Analyze Health
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =====================================================
+         REGISTERED LIVESTOCK
+         ===================================================== -->
+
+    <section class="data-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ANIMAL DATABASE
+                </span>
+
+                <h2>
+                    🐄 Registered Livestock
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+                id="livestockList"
+                class="data-list"
+        >
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <p>
+                    Loading livestock...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HEALTH RECORDS
+         ===================================================== -->
+
+    <section class="data-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    MEDICAL RECORDS
+                </span>
+
+                <h2>
+                    🩺 Health Records
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+                id="healthRecordsList"
+                class="data-list"
+        >
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <p>
+                    Loading health records...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HEALTH HISTORY
+         ===================================================== -->
+
+    <section class="history-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    COMPLETE HISTORY
+                </span>
+
+                <h2>
+                    📊 Animal Health History
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="history-selector">
+
+            <div class="form-group">
+
+                <label for="historyLivestockSelect">
+                    Select Livestock
+                </label>
+
+                <select id="historyLivestockSelect">
+
+                    <option value="">
+                        Select an animal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                    type="button"
+                    id="viewHistoryButton"
+                    class="primary-button"
+            >
+                📊 View Health History
+            </button>
+
+        </div>
+
+
+        <div
+                id="healthHistory"
+                class="history-results"
+        >
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🩺
+                </div>
+
+                <h3>
+                    Select an animal
+                </h3>
+
+                <p>
+                    Select a livestock animal above
+                    to view its complete health history.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="footer">
+
+        <div class="footer-logo">
+
+            <img
+                    src="/images/livestock-logo.png"
+                    alt="Livestock Health Monitor"
+            >
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Livestock Health Monitor
+            </h3>
+
+            <p>
+                Smarter monitoring for healthier animals
+                and stronger farms.
+            </p>
+
+        </div>
+
+
+        <div class="footer-status">
+
+            <span class="status-dot"></span>
+
+            System Online
+
+        </div>
+
+    </footer>
+
+
+</main>
+
+
+<div
+        id="message"
+        class="global-message"
+></div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="/script.js"></script>
+
+<script src="/map.js"></script>
+
+
+</body>
+
+</html>
