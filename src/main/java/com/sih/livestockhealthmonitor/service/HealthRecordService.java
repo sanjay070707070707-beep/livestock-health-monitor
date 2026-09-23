@@ -35,17 +35,20 @@ public class HealthRecordService {
                         healthRecord.getLivestockId()
                 ).orElse(null);
 
-        String animalType = livestock != null
-                ? livestock.getAnimalType()
-                : "Cattle";
+        String animalType =
+                livestock != null
+                        ? livestock.getAnimalType()
+                        : "Cattle";
 
-        int age = livestock != null
-                ? livestock.getAge()
-                : 0;
+        int age =
+                livestock != null
+                        ? livestock.getAge()
+                        : 0;
 
-        String symptoms = healthRecord.getSymptoms() == null
-                ? ""
-                : healthRecord.getSymptoms();
+        String symptoms =
+                healthRecord.getSymptoms() == null
+                        ? ""
+                        : healthRecord.getSymptoms();
 
         String vaccinationStatus =
                 healthRecord.getVaccinationStatus();
@@ -54,7 +57,7 @@ public class HealthRecordService {
                 healthRecord.isMortalityReported();
 
         // =========================================================
-        // ML PREDICTION
+        // AI / ML PREDICTION
         // =========================================================
 
         LivestockPrediction prediction =
@@ -74,60 +77,110 @@ public class HealthRecordService {
                 prediction.getRecommendation();
 
         // =========================================================
-        // SAFETY OVERRIDE
+        // VETERINARY DECISION SUPPORT
         // =========================================================
-        // The ML model assists the decision.
-        // Clearly severe cases must never be classified as healthy.
 
         String lowerSymptoms =
                 symptoms.toLowerCase();
 
-        boolean severeSymptom =
-                lowerSymptoms.contains("cough")
-                        || lowerSymptoms.contains("diarrhea")
-                        || lowerSymptoms.contains("loose motion")
-                        || lowerSymptoms.contains("weakness")
-                        || lowerSymptoms.contains("weak")
-                        || lowerSymptoms.contains("lethargy")
-                        || lowerSymptoms.contains("loss of appetite")
-                        || lowerSymptoms.contains("appetite");
+        boolean respiratorySymptoms =
+                containsAny(
+                        lowerSymptoms,
+                        "cough",
+                        "coughing",
+                        "breathing",
+                        "respiratory",
+                        "nasal discharge",
+                        "runny nose"
+                );
+
+        boolean digestiveSymptoms =
+                containsAny(
+                        lowerSymptoms,
+                        "diarrhea",
+                        "diarrhoea",
+                        "loose motion",
+                        "watery stool",
+                        "dehydration"
+                );
+
+        boolean severeSymptoms =
+                containsAny(
+                        lowerSymptoms,
+                        "severe",
+                        "collapse",
+                        "unable to stand",
+                        "bleeding",
+                        "convulsion"
+                );
+
+        boolean generalSymptoms =
+                containsAny(
+                        lowerSymptoms,
+                        "weakness",
+                        "weak",
+                        "lethargy",
+                        "loss of appetite",
+                        "not eating",
+                        "reduced feeding"
+                );
+
+        // =========================================================
+        // RISK OVERRIDES
+        // =========================================================
 
         if (mortalityReported) {
 
             riskLevel = "HIGH RISK";
 
             recommendation =
-                    "Veterinary examination recommended immediately";
+                    "URGENT: Mortality reported. " +
+                            "Isolate affected animal(s), " +
+                            "notify a veterinary professional, " +
+                            "and initiate field investigation.";
 
         } else if (healthRecord.getTemperature() >= 40.0) {
 
             riskLevel = "HIGH RISK";
 
             recommendation =
-                    "Veterinary examination recommended immediately";
+                    "URGENT veterinary examination recommended. " +
+                            "Consider isolation and immediate clinical assessment.";
 
-        } else if (healthRecord.getTemperature() >= 39.5
-                && severeSymptom) {
+        } else if (
+                healthRecord.getTemperature() >= 39.5
+                        && (severeSymptoms
+                        || respiratorySymptoms
+                        || digestiveSymptoms)
+        ) {
 
             riskLevel = "HIGH RISK";
 
             recommendation =
-                    "Veterinary examination recommended";
+                    "Veterinary examination recommended. " +
+                            "Consider isolation and diagnostic assessment.";
 
-        } else if (healthRecord.getTemperature() >= 39.0
-                || severeSymptom) {
+        } else if (
+                healthRecord.getTemperature() >= 39.0
+                        || respiratorySymptoms
+                        || digestiveSymptoms
+                        || generalSymptoms
+        ) {
 
             if (!"HIGH RISK".equals(riskLevel)) {
 
                 riskLevel = "AT RISK";
 
                 recommendation =
-                        "Monitor animal closely and consult a veterinarian if symptoms persist";
+                        "Monitor animal closely, " +
+                                "repeat health assessment, " +
+                                "and consult a veterinary professional " +
+                                "if symptoms persist or worsen.";
             }
         }
 
         // =========================================================
-        // SAVE ML-BASED HEALTH STATUS
+        // SAVE HEALTH STATUS
         // =========================================================
 
         healthRecord.setHealthStatus(riskLevel);
@@ -138,6 +191,7 @@ public class HealthRecordService {
         // =========================================================
 
         if (healthRecord.getReportDate() == null) {
+
             healthRecord.setReportDate(
                     LocalDateTime.now()
             );
@@ -182,7 +236,22 @@ public class HealthRecordService {
         );
     }
 
+    private boolean containsAny(
+            String text,
+            String... keywords) {
+
+        for (String keyword : keywords) {
+
+            if (text.contains(keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public List<HealthRecord> getAllRecords() {
+
         return healthRecordRepository.findAll();
     }
 

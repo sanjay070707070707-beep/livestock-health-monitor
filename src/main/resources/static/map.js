@@ -1,620 +1,339 @@
-// =========================================================
-// LIVESTOCK HEALTH MONITOR
-// GEOSPATIAL SURVEILLANCE MAP
-// =========================================================
-
 let livestockMap = null;
-let livestockMapMarkers = [];
-
-// =========================================================
-// INITIALIZE MAP
-// =========================================================
+let mapMarkers = [];
 
 function initializeLivestockMap() {
-    const mapContainer =
+    const mapElement =
         document.getElementById("livestockMap");
 
-    if (!mapContainer) {
-        console.error(
-            "livestockMap container was not found."
-        );
-        return;
-    }
-
-    if (typeof L === "undefined") {
-        console.error(
-            "Leaflet library was not loaded."
-        );
-
-        const message =
-            document.getElementById("mapMessage");
-
-        if (message) {
-            message.textContent =
-                "Map library could not be loaded.";
-        }
-
+    if (!mapElement) {
         return;
     }
 
     if (livestockMap) {
-        livestockMap.remove();
-        livestockMap = null;
+        return;
     }
 
-    livestockMap = L.map(
-        "livestockMap",
-        {
-            center: [20.5937, 78.9629],
-            zoom: 5,
-            minZoom: 4,
-            maxZoom: 18,
-            zoomControl: true
-        }
+    livestockMap = L.map("livestockMap").setView(
+        [20.5937, 78.9629],
+        5
     );
 
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-            maxZoom: 19,
-            attribution:
-                "&copy; OpenStreetMap contributors"
+            attribution: "&copy; OpenStreetMap contributors",
+            maxZoom: 19
         }
     ).addTo(livestockMap);
-
-    setTimeout(() => {
-        if (livestockMap) {
-            livestockMap.invalidateSize();
-        }
-    }, 300);
 }
 
-// =========================================================
-// GET LATEST HEALTH RECORD
-// =========================================================
-
-function getLatestHealthRecord(
+function getAnimalRiskStatus(
     livestockId,
-    records
+    healthRecords
 ) {
-    const animalRecords =
-        records.filter(
-            record =>
-                Number(record.livestockId) ===
-                Number(livestockId)
-        );
-
-    if (animalRecords.length === 0) {
-        return null;
-    }
-
-    animalRecords.sort(
-        (a, b) => {
-            const dateA =
-                a.reportDate
-                    ? new Date(
-                        a.reportDate
-                    ).getTime()
-                    : 0;
-
-            const dateB =
-                b.reportDate
-                    ? new Date(
-                        b.reportDate
-                    ).getTime()
-                    : 0;
-
-            if (dateA !== dateB) {
-                return dateB - dateA;
-            }
-
-            return (
-                Number(b.id || 0) -
-                Number(a.id || 0)
+    const records =
+        healthRecords
+            .filter(
+                record =>
+                    record.livestockId === livestockId
+            )
+            .sort(
+                (a, b) =>
+                    new Date(
+                        b.reportDate || 0
+                    ) -
+                    new Date(
+                        a.reportDate || 0
+                    )
             );
-        }
-    );
 
-    return animalRecords[0];
+    if (records.length === 0) {
+        return "HEALTHY";
+    }
+
+    return (
+        records[0].healthStatus ||
+        "HEALTHY"
+    ).toUpperCase();
 }
 
-// =========================================================
-// RISK INFORMATION
-// =========================================================
-
-function getMapRiskInfo(status) {
-    const normalized =
-        String(
-            status || "HEALTHY"
-        )
-            .toUpperCase()
-            .trim();
-
-    if (normalized === "HIGH RISK") {
-        return {
-            label: "HIGH RISK",
-            color: "#ef4444",
-            icon: "🚨"
-        };
+function getMarkerColor(status) {
+    if (status === "HIGH RISK") {
+        return "#ef4444";
     }
 
     if (
-        normalized === "AT RISK" ||
-        normalized === "MEDIUM RISK"
+        status === "AT RISK" ||
+        status === "MEDIUM RISK"
     ) {
-        return {
-            label: "AT RISK",
-            color: "#f59e0b",
-            icon: "⚠️"
-        };
+        return "#f59e0b";
     }
 
-    return {
-        label: "HEALTHY",
-        color: "#16a34a",
-        icon: "🟢"
-    };
+    return "#16a34a";
 }
 
-// =========================================================
-// CREATE POPUP
-// =========================================================
-
-function createAnimalPopup(
+function createAnimalMarker(
     animal,
-    healthRecord
+    status
 ) {
-    const status =
-        healthRecord
-            ? healthRecord.healthStatus
-            : "HEALTHY";
-
-    const risk =
-        getMapRiskInfo(status);
-
-    const temperature =
-        healthRecord &&
-        healthRecord.temperature !== undefined
-            ? `${healthRecord.temperature} °C`
-            : "No health record";
-
-    const symptoms =
-        healthRecord &&
-        healthRecord.symptoms
-            ? healthRecord.symptoms
-            : "No symptoms reported";
-
-    const vaccination =
-        healthRecord &&
-        healthRecord.vaccinationStatus
-            ? healthRecord.vaccinationStatus
-            : "Not provided";
-
-    const mortality =
-        healthRecord &&
-        healthRecord.mortalityReported
-            ? "☠️ Reported"
-            : "No";
-
-    return `
-        <div class="map-popup">
-
-            <div class="map-popup-header">
-
-                <strong>
-                    🐄 ${escapeHtml(
-        animal.tagNumber ||
-        "Unknown Animal"
-    )}
-                </strong>
-
-                <span class="map-popup-risk">
-                    ${risk.icon}
-                    ${escapeHtml(risk.label)}
-                </span>
-
-            </div>
-
-            <div class="map-popup-body">
-
-                <p>
-                    <strong>Animal:</strong>
-                    ${escapeHtml(
-        animal.animalType ||
-        "Not provided"
-    )}
-                </p>
-
-                <p>
-                    <strong>Breed:</strong>
-                    ${escapeHtml(
-        animal.breed ||
-        "Not provided"
-    )}
-                </p>
-
-                <p>
-                    <strong>Village:</strong>
-                    ${escapeHtml(
-        animal.village ||
-        "Not provided"
-    )}
-                </p>
-
-                <p>
-                    <strong>Block:</strong>
-                    ${escapeHtml(
-        animal.block ||
-        "Not provided"
-    )}
-                </p>
-
-                <p>
-                    <strong>District:</strong>
-                    ${escapeHtml(
-        animal.district ||
-        "Not provided"
-    )}
-                </p>
-
-                <p>
-                    <strong>Temperature:</strong>
-                    ${escapeHtml(
-        temperature
-    )}
-                </p>
-
-                <p>
-                    <strong>Symptoms:</strong>
-                    ${escapeHtml(
-        symptoms
-    )}
-                </p>
-
-                <p>
-                    <strong>Vaccination:</strong>
-                    ${escapeHtml(
-        vaccination
-    )}
-                </p>
-
-                <p>
-                    <strong>Mortality:</strong>
-                    ${escapeHtml(
-        mortality
-    )}
-                </p>
-
-            </div>
-        </div>
-    `;
-}
-
-// =========================================================
-// CREATE LIVESTOCK MARKER
-// =========================================================
-
-function createLivestockMarker(
-    animal,
-    healthRecord
-) {
-    if (
-        animal.latitude === null ||
-        animal.latitude === undefined ||
-        animal.longitude === null ||
-        animal.longitude === undefined
-    ) {
-        return null;
-    }
-
-    const latitude =
-        Number(animal.latitude);
-
-    const longitude =
-        Number(animal.longitude);
-
-    if (
-        !Number.isFinite(latitude) ||
-        !Number.isFinite(longitude)
-    ) {
-        return null;
-    }
-
-    if (
-        latitude < -90 ||
-        latitude > 90 ||
-        longitude < -180 ||
-        longitude > 180
-    ) {
-        return null;
-    }
-
-    const status =
-        healthRecord
-            ? healthRecord.healthStatus
-            : "HEALTHY";
-
-    const risk =
-        getMapRiskInfo(status);
+    const color =
+        getMarkerColor(status);
 
     const marker =
         L.circleMarker(
             [
-                latitude,
-                longitude
+                Number(animal.latitude),
+                Number(animal.longitude)
             ],
             {
-                radius: 10,
+                radius: 9,
+                fillColor: color,
                 color: "#ffffff",
                 weight: 2,
-                fillColor: risk.color,
+                opacity: 1,
                 fillOpacity: 0.9
             }
         );
 
-    marker.bindPopup(
-        createAnimalPopup(
-            animal,
-            healthRecord
-        ),
-        {
-            maxWidth: 340
-        }
-    );
+    const riskClass =
+        status === "HIGH RISK"
+            ? "map-risk-high"
+            : status === "AT RISK" ||
+            status === "MEDIUM RISK"
+                ? "map-risk-at-risk"
+                : "map-risk-healthy";
 
-    marker.addTo(
-        livestockMap
-    );
+    marker.bindPopup(`
+        <div class="map-popup">
+            <div class="map-popup-header">
+                <strong>
+                    ${escapeHtml(animal.tagNumber)}
+                </strong>
+
+                <span class="map-popup-risk ${riskClass}">
+                    ${escapeHtml(status)}
+                </span>
+            </div>
+
+            <div class="map-popup-body">
+                <p>
+                    <strong>Animal:</strong>
+                    ${escapeHtml(animal.animalType)}
+                </p>
+
+                <p>
+                    <strong>Breed:</strong>
+                    ${escapeHtml(animal.breed)}
+                </p>
+
+                <p>
+                    <strong>Age:</strong>
+                    ${escapeHtml(animal.age)} years
+                </p>
+
+                <p>
+                    <strong>Village:</strong>
+                    ${escapeHtml(animal.village)}
+                </p>
+
+                <p>
+                    <strong>Block:</strong>
+                    ${escapeHtml(animal.block)}
+                </p>
+
+                <p>
+                    <strong>District:</strong>
+                    ${escapeHtml(animal.district)}
+                </p>
+            </div>
+        </div>
+    `);
 
     return marker;
 }
-
-// =========================================================
-// UPDATE MAP
-// =========================================================
 
 function updateSurveillanceMap(
     livestock,
     healthRecords
 ) {
-    if (!Array.isArray(livestock)) {
-        livestock = [];
-    }
-
-    if (!Array.isArray(healthRecords)) {
-        healthRecords = [];
-    }
-
-    if (!livestockMap) {
-        initializeLivestockMap();
-    }
+    initializeLivestockMap();
 
     if (!livestockMap) {
         return;
     }
 
-    livestockMapMarkers.forEach(
-        marker => {
-            marker.remove();
-        }
-    );
+    mapMarkers.forEach(marker => {
+        livestockMap.removeLayer(marker);
+    });
 
-    livestockMapMarkers = [];
+    mapMarkers = [];
 
-    const mappedAnimals = [];
-    const villages = new Set();
+    const mappedAnimals =
+        livestock.filter(
+            animal =>
+                animal.latitude !== null &&
+                animal.latitude !== undefined &&
+                animal.longitude !== null &&
+                animal.longitude !== undefined &&
+                !Number.isNaN(
+                    Number(animal.latitude)
+                ) &&
+                !Number.isNaN(
+                    Number(animal.longitude)
+                )
+        );
 
-    let highRiskCount = 0;
-    let atRiskCount = 0;
-
-    livestock.forEach(
-        animal => {
-            const healthRecord =
-                getLatestHealthRecord(
+    const highRiskAnimals =
+        mappedAnimals.filter(
+            animal =>
+                getAnimalRiskStatus(
                     animal.id,
                     healthRecords
-                );
-
-            const marker =
-                createLivestockMarker(
-                    animal,
-                    healthRecord
-                );
-
-            if (!marker) {
-                return;
-            }
-
-            livestockMapMarkers.push(
-                marker
-            );
-
-            mappedAnimals.push({
-                animal: animal,
-                healthRecord: healthRecord
-            });
-
-            if (animal.village) {
-                villages.add(
-                    animal.village
-                        .trim()
-                        .toLowerCase()
-                );
-            }
-
-            const status =
-                healthRecord
-                    ? String(
-                        healthRecord.healthStatus ||
-                        "HEALTHY"
-                    )
-                        .toUpperCase()
-                        .trim()
-                    : "HEALTHY";
-
-            if (
-                status === "HIGH RISK"
-            ) {
-                highRiskCount++;
-            }
-
-            if (
-                status === "AT RISK" ||
-                status === "MEDIUM RISK"
-            ) {
-                atRiskCount++;
-            }
-        }
-    );
-
-    updateMapStatistics(
-        mappedAnimals.length,
-        highRiskCount,
-        atRiskCount,
-        villages.size
-    );
-
-    const message =
-        document.getElementById(
-            "mapMessage"
+                ) === "HIGH RISK"
         );
 
-    if (
-        mappedAnimals.length === 0
-    ) {
-        if (message) {
-            message.textContent =
-                "No livestock with valid GPS coordinates is available for mapping.";
-        }
+    const atRiskAnimals =
+        mappedAnimals.filter(
+            animal => {
+                const status =
+                    getAnimalRiskStatus(
+                        animal.id,
+                        healthRecords
+                    );
 
-        livestockMap.setView(
-            [20.5937, 78.9629],
-            5
+                return (
+                    status === "AT RISK" ||
+                    status === "MEDIUM RISK"
+                );
+            }
         );
 
-        return;
-    }
-
-    if (message) {
-        message.textContent =
-            `${mappedAnimals.length} livestock location(s) displayed on the surveillance map.`;
-    }
-
-    const bounds =
-        L.latLngBounds(
-            mappedAnimals.map(
-                item => [
-                    Number(
-                        item.animal.latitude
-                    ),
-                    Number(
-                        item.animal.longitude
-                    )
-                ]
-            )
+    const villages =
+        new Set(
+            mappedAnimals
+                .map(
+                    animal =>
+                        animal.village
+                )
+                .filter(Boolean)
         );
 
-    if (bounds.isValid()) {
-        if (
-            mappedAnimals.length === 1
-        ) {
-            livestockMap.setView(
-                bounds.getCenter(),
-                14
-            );
-        } else {
-            livestockMap.fitBounds(
-                bounds,
-                {
-                    padding: [
-                        40,
-                        40
-                    ],
-                    maxZoom: 15
-                }
-            );
-        }
-    }
-
-    setTimeout(() => {
-        if (livestockMap) {
-            livestockMap.invalidateSize();
-        }
-    }, 300);
-}
-
-// =========================================================
-// MAP STATISTICS
-// =========================================================
-
-function updateMapStatistics(
-    mappedAnimals,
-    highRisk,
-    atRisk,
-    villages
-) {
     const mappedAnimalsElement =
         document.getElementById(
             "mappedAnimals"
         );
 
-    const highRiskElement =
+    const mappedHighRiskElement =
         document.getElementById(
             "mappedHighRisk"
         );
 
-    const atRiskElement =
+    const mappedAtRiskElement =
         document.getElementById(
             "mappedAtRisk"
         );
 
-    const villagesElement =
+    const mappedVillagesElement =
         document.getElementById(
             "mappedVillages"
         );
 
     if (mappedAnimalsElement) {
         mappedAnimalsElement.textContent =
-            mappedAnimals;
+            mappedAnimals.length;
     }
 
-    if (highRiskElement) {
-        highRiskElement.textContent =
-            highRisk;
+    if (mappedHighRiskElement) {
+        mappedHighRiskElement.textContent =
+            highRiskAnimals.length;
     }
 
-    if (atRiskElement) {
-        atRiskElement.textContent =
-            atRisk;
+    if (mappedAtRiskElement) {
+        mappedAtRiskElement.textContent =
+            atRiskAnimals.length;
     }
 
-    if (villagesElement) {
-        villagesElement.textContent =
-            villages;
+    if (mappedVillagesElement) {
+        mappedVillagesElement.textContent =
+            villages.size;
     }
+
+    if (mappedAnimals.length === 0) {
+        livestockMap.setView(
+            [20.5937, 78.9629],
+            5
+        );
+
+        const mapMessage =
+            document.getElementById(
+                "mapMessage"
+            );
+
+        if (mapMessage) {
+            mapMessage.textContent =
+                "No livestock with valid GPS coordinates available.";
+        }
+
+        return;
+    }
+
+    const bounds = [];
+
+    mappedAnimals.forEach(animal => {
+        const status =
+            getAnimalRiskStatus(
+                animal.id,
+                healthRecords
+            );
+
+        const marker =
+            createAnimalMarker(
+                animal,
+                status
+            );
+
+        marker.addTo(livestockMap);
+
+        mapMarkers.push(marker);
+
+        bounds.push([
+            Number(animal.latitude),
+            Number(animal.longitude)
+        ]);
+    });
+
+    if (bounds.length === 1) {
+        livestockMap.setView(
+            bounds[0],
+            14
+        );
+    } else {
+        livestockMap.fitBounds(
+            bounds,
+            {
+                padding: [40, 40]
+            }
+        );
+    }
+
+    const mapMessage =
+        document.getElementById(
+            "mapMessage"
+        );
+
+    if (mapMessage) {
+        mapMessage.textContent =
+            `${mappedAnimals.length} animal(s) mapped across ${villages.size} village(s).`;
+    }
+
+    setTimeout(() => {
+        livestockMap.invalidateSize();
+    }, 200);
 }
-
-// =========================================================
-// START MAP
-// =========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
         initializeLivestockMap();
-
-        setTimeout(() => {
-            if (
-                typeof livestockData !==
-                "undefined" &&
-                typeof healthRecordsData !==
-                "undefined"
-            ) {
-                updateSurveillanceMap(
-                    livestockData,
-                    healthRecordsData
-                );
-            }
-        }, 1000);
     }
 );

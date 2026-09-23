@@ -66,12 +66,12 @@ function animateNumber(elementId, targetValue) {
     const startTime = performance.now();
 
     function update(currentTime) {
-        const progress =
-            Math.min((currentTime - startTime) / duration, 1);
+        const progress = Math.min(
+            (currentTime - startTime) / duration,
+            1
+        );
 
-        const value = Math.floor(progress * target);
-
-        element.textContent = value;
+        element.textContent = Math.floor(progress * target);
 
         if (progress < 1) {
             requestAnimationFrame(update);
@@ -115,22 +115,15 @@ async function loadData() {
         ]);
 
         if (!livestockResponse.ok) {
-            throw new Error(
-                "Failed to load livestock data"
-            );
+            throw new Error("Failed to load livestock data");
         }
 
         if (!healthResponse.ok) {
-            throw new Error(
-                "Failed to load health records"
-            );
+            throw new Error("Failed to load health records");
         }
 
-        livestockData =
-            await livestockResponse.json();
-
-        healthRecordsData =
-            await healthResponse.json();
+        livestockData = await livestockResponse.json();
+        healthRecordsData = await healthResponse.json();
 
         animateNumber(
             "totalLivestock",
@@ -174,14 +167,7 @@ async function loadData() {
 
         await detectOutbreaks();
 
-        // =================================================
-        // UPDATE GEOSPATIAL SURVEILLANCE MAP
-        // =================================================
-
-        if (
-            typeof updateSurveillanceMap ===
-            "function"
-        ) {
+        if (typeof updateSurveillanceMap === "function") {
             updateSurveillanceMap(
                 livestockData,
                 healthRecordsData
@@ -293,7 +279,6 @@ function displayLivestock() {
     container.innerHTML =
         livestockData.map(animal => `
             <div class="livestock-card">
-
                 <div class="card-header">
                     <h3>
                         ${escapeHtml(animal.tagNumber)}
@@ -312,7 +297,6 @@ function displayLivestock() {
                 </div>
 
                 <div class="card-details">
-
                     <p>
                         <strong>Animal:</strong>
                         ${escapeHtml(animal.animalType)}
@@ -354,15 +338,14 @@ function displayLivestock() {
             animal.longitude !== null &&
             animal.longitude !== undefined
                 ? `
-                            <p>
-                                <strong>Location:</strong>
-                                ${escapeHtml(animal.latitude)},
-                                ${escapeHtml(animal.longitude)}
-                            </p>
-                        `
+                                <p>
+                                    <strong>Location:</strong>
+                                    ${escapeHtml(animal.latitude)},
+                                    ${escapeHtml(animal.longitude)}
+                                </p>
+                            `
                 : ""
         }
-
                 </div>
             </div>
         `).join("");
@@ -434,7 +417,8 @@ function displayHealthRecords() {
             const animal =
                 livestockData.find(
                     item =>
-                        item.id === record.livestockId
+                        item.id ===
+                        record.livestockId
                 );
 
             const animalName =
@@ -449,7 +433,6 @@ function displayHealthRecords() {
 
             return `
                 <div class="health-record-card ${riskClass}">
-
                     <div class="card-header">
                         <h3>
                             ${escapeHtml(animalName)}
@@ -464,7 +447,6 @@ function displayHealthRecords() {
                     </div>
 
                     <div class="card-details">
-
                         <p>
                             <strong>Temperature:</strong>
                             ${escapeHtml(record.temperature)} °C
@@ -511,14 +493,14 @@ function displayHealthRecords() {
                         ${
                 record.mortalityReported
                     ? `
-                                <p class="mortality-warning">
-                                    <strong>☠ Mortality:</strong>
-                                    ${escapeHtml(
+                                    <p class="mortality-warning">
+                                        <strong>☠ Mortality:</strong>
+                                        ${escapeHtml(
                         record.mortalityReason ||
                         "Mortality reported"
                     )}
-                                </p>
-                            `
+                                    </p>
+                                `
                     : ""
             }
 
@@ -529,7 +511,6 @@ function displayHealthRecords() {
                 "Continue monitoring"
             )}
                         </p>
-
                     </div>
                 </div>
             `;
@@ -587,7 +568,7 @@ async function deleteLivestock(
             );
 
             alert(
-                "Unable to delete livestock. Please check the application console."
+                "Unable to delete livestock."
             );
         }
 
@@ -598,7 +579,7 @@ async function deleteLivestock(
         );
 
         alert(
-            "Unable to connect to the server. Please make sure the Spring Boot application is running."
+            "Unable to connect to the server."
         );
     }
 }
@@ -732,6 +713,11 @@ async function submitLivestock(event) {
 async function submitHealthRecord(event) {
     event.preventDefault();
 
+    const mortalityElement =
+        document.getElementById(
+            "mortalityReported"
+        );
+
     const healthRecord = {
         livestockId:
             Number(
@@ -768,9 +754,11 @@ async function submitHealthRecord(event) {
             ).value.trim(),
 
         mortalityReported:
-        document.getElementById(
-            "mortalityReported"
-        ).checked,
+            mortalityElement
+                ? mortalityElement.type === "checkbox"
+                    ? mortalityElement.checked
+                    : mortalityElement.value === "true"
+                : false,
 
         mortalityReason:
             document.getElementById(
@@ -855,12 +843,9 @@ function displayRiskAlerts() {
         healthRecordsData
             .filter(
                 record =>
-                    record.healthStatus ===
-                    "HIGH RISK" ||
-                    record.healthStatus ===
-                    "AT RISK" ||
-                    record.healthStatus ===
-                    "MEDIUM RISK"
+                    record.healthStatus === "HIGH RISK" ||
+                    record.healthStatus === "AT RISK" ||
+                    record.healthStatus === "MEDIUM RISK"
             )
             .sort(
                 (a, b) =>
@@ -903,7 +888,6 @@ function displayRiskAlerts() {
 
             return `
                 <div class="risk-alert ${riskClass}">
-
                     <div>
                         <strong>
                             ${escapeHtml(animalName)}
@@ -929,7 +913,6 @@ function displayRiskAlerts() {
                 "Veterinary monitoring recommended"
             )}
                     </small>
-
                 </div>
             `;
         }).join("");
@@ -992,9 +975,7 @@ function displayOutbreakAlerts() {
         return;
     }
 
-    if (
-        outbreakAlertsData.length === 0
-    ) {
+    if (outbreakAlertsData.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 🟢 No outbreak patterns detected.
@@ -1008,13 +989,10 @@ function displayOutbreakAlerts() {
         outbreakAlertsData.map(alert => `
             <div class="outbreak-card outbreak-${escapeHtml(
             String(
-                alert.riskLevel ||
-                "LOW"
+                alert.riskLevel || "LOW"
             ).toLowerCase()
         )}">
-
                 <div class="card-header">
-
                     <h3>
                         🚨 ${escapeHtml(
             alert.village
@@ -1026,11 +1004,9 @@ function displayOutbreakAlerts() {
             alert.riskLevel
         )}
                     </span>
-
                 </div>
 
                 <div class="card-details">
-
                     <p>
                         <strong>Block:</strong>
                         ${escapeHtml(
@@ -1075,7 +1051,6 @@ function displayOutbreakAlerts() {
             alert.detectedAt
         )}
                     </p>
-
                 </div>
             </div>
         `).join("");
@@ -1103,8 +1078,7 @@ function displayOutbreakError() {
 // =========================================================
 
 function updateVaccinationStats() {
-    const latestRecords =
-        new Map();
+    const latestRecords = new Map();
 
     healthRecordsData.forEach(record => {
         if (!record.livestockId) {
@@ -1132,83 +1106,66 @@ function updateVaccinationStats() {
         }
     });
 
-    let vaccinatedCount = 0;
-    let unvaccinatedCount = 0;
+    let vaccinated = 0;
+    let unvaccinated = 0;
 
-    livestockData.forEach(animal => {
-        const record =
-            latestRecords.get(
-                animal.id
-            );
-
-        if (!record) {
-            unvaccinatedCount++;
-            return;
-        }
-
+    latestRecords.forEach(record => {
         const status =
             String(
-                record.vaccinationStatus ||
-                ""
-            )
-                .toLowerCase()
-                .trim();
+                record.vaccinationStatus || ""
+            ).toUpperCase();
 
         if (
-            status.includes("up to date") ||
-            status.includes("vaccinated") ||
-            status.includes("complete") ||
-            status.includes("completed")
+            status === "UP TO DATE" ||
+            status === "VACCINATED"
         ) {
-            if (
-                !status.includes(
-                    "not vaccinated"
-                ) &&
-                !status.includes(
-                    "partially vaccinated"
-                )
-            ) {
-                vaccinatedCount++;
-                return;
-            }
+            vaccinated++;
+        } else if (
+            status === "NOT VACCINATED"
+        ) {
+            unvaccinated++;
         }
-
-        unvaccinatedCount++;
     });
 
-    const total =
-        livestockData.length;
+    const totalTracked =
+        vaccinated + unvaccinated;
 
     const coverage =
-        total > 0
+        totalTracked > 0
             ? Math.round(
-                (vaccinatedCount / total) *
+                (vaccinated /
+                    totalTracked) *
                 100
             )
             : 0;
 
     animateNumber(
         "vaccinatedCount",
-        vaccinatedCount
+        vaccinated
     );
 
     animateNumber(
         "unvaccinatedCount",
-        unvaccinatedCount
+        unvaccinated
     );
 
-    animateNumber(
-        "vaccinationCoverage",
-        coverage
-    );
+    const coverageElement =
+        document.getElementById(
+            "vaccinationCoverage"
+        );
 
-    const progress =
+    if (coverageElement) {
+        coverageElement.textContent =
+            coverage;
+    }
+
+    const progressElement =
         document.getElementById(
             "vaccinationProgress"
         );
 
-    if (progress) {
-        progress.style.width =
+    if (progressElement) {
+        progressElement.style.width =
             `${coverage}%`;
     }
 }
@@ -1217,7 +1174,7 @@ function updateVaccinationStats() {
 // HEALTH HISTORY
 // =========================================================
 
-async function loadHealthHistory() {
+async function viewHealthHistory() {
     const select =
         document.getElementById(
             "historyLivestockSelect"
@@ -1233,25 +1190,25 @@ async function loadHealthHistory() {
     }
 
     const livestockId =
-        select.value;
+        Number(select.value);
 
     if (!livestockId) {
         container.innerHTML = `
             <div class="empty-state">
-                Select livestock to view health history.
+                Please select livestock to view history.
             </div>
         `;
 
         return;
     }
 
-    try {
-        container.innerHTML = `
-            <div class="empty-state">
-                Loading health history...
-            </div>
-        `;
+    container.innerHTML = `
+        <div class="empty-state">
+            Loading health history...
+        </div>
+    `;
 
+    try {
         const response =
             await fetch(
                 `/api/health-records/livestock/${livestockId}`
@@ -1263,12 +1220,90 @@ async function loadHealthHistory() {
             );
         }
 
-        const history =
+        const records =
             await response.json();
 
-        displayHealthHistory(
-            history
-        );
+        if (records.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    No health history available for this animal.
+                </div>
+            `;
+
+            return;
+        }
+
+        const sortedRecords =
+            [...records].sort(
+                (a, b) =>
+                    new Date(
+                        b.reportDate || 0
+                    ) -
+                    new Date(
+                        a.reportDate || 0
+                    )
+            );
+
+        container.innerHTML =
+            sortedRecords.map(record => `
+                <div class="history-card">
+                    <div class="card-header">
+                        <h3>
+                            ${escapeHtml(
+                record.healthStatus ||
+                "UNKNOWN"
+            )}
+                        </h3>
+
+                        <span>
+                            ${formatDate(
+                record.reportDate
+            )}
+                        </span>
+                    </div>
+
+                    <div class="card-details">
+                        <p>
+                            <strong>Temperature:</strong>
+                            ${escapeHtml(
+                record.temperature
+            )} °C
+                        </p>
+
+                        <p>
+                            <strong>Symptoms:</strong>
+                            ${escapeHtml(
+                record.symptoms ||
+                "None"
+            )}
+                        </p>
+
+                        <p>
+                            <strong>Vaccination:</strong>
+                            ${escapeHtml(
+                record.vaccinationStatus ||
+                "Not provided"
+            )}
+                        </p>
+
+                        <p>
+                            <strong>Treatment:</strong>
+                            ${escapeHtml(
+                record.treatment ||
+                "Not provided"
+            )}
+                        </p>
+
+                        <p>
+                            <strong>Recommendation:</strong>
+                            ${escapeHtml(
+                record.recommendation ||
+                "Continue monitoring"
+            )}
+                        </p>
+                    </div>
+                </div>
+            `).join("");
 
     } catch (error) {
         console.error(
@@ -1284,134 +1319,70 @@ async function loadHealthHistory() {
     }
 }
 
-function displayHealthHistory(
-    history
-) {
-    const container =
-        document.getElementById(
-            "healthHistory"
+// =========================================================
+// PROTOTYPE WORKFLOW NAVIGATION
+// =========================================================
+
+function setupPrototypeWorkflow() {
+    const workflowLinks =
+        document.querySelectorAll(
+            'a[href^="#"]'
         );
 
-    if (!container) {
-        return;
-    }
+    workflowLinks.forEach(link => {
+        link.addEventListener(
+            "click",
+            event => {
+                const targetId =
+                    link.getAttribute("href");
 
-    if (
-        !history ||
-        history.length === 0
-    ) {
-        container.innerHTML = `
-            <div class="empty-state">
-                No health history available for this animal.
-            </div>
-        `;
+                if (
+                    !targetId ||
+                    targetId === "#"
+                ) {
+                    return;
+                }
 
-        return;
-    }
+                const target =
+                    document.querySelector(
+                        targetId
+                    );
 
-    const sortedHistory =
-        [...history].sort(
-            (a, b) =>
-                new Date(
-                    b.reportDate || 0
-                ) -
-                new Date(
-                    a.reportDate || 0
-                )
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
         );
-
-    container.innerHTML =
-        sortedHistory.map(record => `
-            <div class="history-card">
-
-                <div class="card-header">
-
-                    <h3>
-                        ${escapeHtml(
-            record.healthStatus ||
-            "UNKNOWN"
-        )}
-                    </h3>
-
-                    <span>
-                        ${formatDate(
-            record.reportDate
-        )}
-                    </span>
-
-                </div>
-
-                <div class="card-details">
-
-                    <p>
-                        <strong>Temperature:</strong>
-                        ${escapeHtml(
-            record.temperature
-        )} °C
-                    </p>
-
-                    <p>
-                        <strong>Symptoms:</strong>
-                        ${escapeHtml(
-            record.symptoms ||
-            "None"
-        )}
-                    </p>
-
-                    <p>
-                        <strong>Vaccination:</strong>
-                        ${escapeHtml(
-            record.vaccinationStatus ||
-            "Not provided"
-        )}
-                    </p>
-
-                    <p>
-                        <strong>Treatment:</strong>
-                        ${escapeHtml(
-            record.treatment ||
-            "Not provided"
-        )}
-                    </p>
-
-                    <p>
-                        <strong>Recommendation:</strong>
-                        ${escapeHtml(
-            record.recommendation ||
-            "Continue monitoring"
-        )}
-                    </p>
-
-                    ${
-            record.mortalityReported
-                ? `
-                            <p class="mortality-warning">
-                                <strong>☠ Mortality:</strong>
-                                ${escapeHtml(
-                    record.mortalityReason ||
-                    "Mortality reported"
-                )}
-                            </p>
-                        `
-                : ""
-        }
-
-                </div>
-            </div>
-        `).join("");
+    });
 }
 
 // =========================================================
-// INITIALIZE APPLICATION
+// EVENT LISTENERS
 // =========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
-
         const livestockForm =
             document.getElementById(
                 "livestockForm"
+            );
+
+        const healthForm =
+            document.getElementById(
+                "healthForm"
+            );
+
+        const viewHistoryButton =
+            document.getElementById(
+                "viewHistoryButton"
             );
 
         if (livestockForm) {
@@ -1421,11 +1392,6 @@ document.addEventListener(
             );
         }
 
-        const healthForm =
-            document.getElementById(
-                "healthForm"
-            );
-
         if (healthForm) {
             healthForm.addEventListener(
                 "submit",
@@ -1433,31 +1399,15 @@ document.addEventListener(
             );
         }
 
-        const viewHistoryButton =
-            document.getElementById(
-                "viewHistoryButton"
-            );
-
         if (viewHistoryButton) {
             viewHistoryButton.addEventListener(
                 "click",
-                loadHealthHistory
+                viewHealthHistory
             );
         }
 
+        setupPrototypeWorkflow();
+
         loadData();
-    }
-);
-
-// =========================================================
-// REFRESH WHEN USER RETURNS TO TAB
-// =========================================================
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
-        if (!document.hidden) {
-            loadData();
-        }
     }
 );
