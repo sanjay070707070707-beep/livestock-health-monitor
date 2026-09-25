@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livestock Health Monitor</title>
+    <link rel="icon" type="image/png" href="/images/livestock-logo.png?v=2">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .workflow-section .primary-button:not(.active-page){background:rgba(12,58,43,.72);color:#effff5;border:1px solid rgba(91,224,159,.20);box-shadow:none}
+        .workflow-section .active-page{background:linear-gradient(135deg,#24a866,#48d888);color:#03130a;border:0;box-shadow:0 8px 25px rgba(40,200,120,.15)}
+        .workflow-section a{text-decoration:none}
+        .workflow-section span{color:#087f5b;font-weight:800;font-size:20px}
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></head>
+<body>
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+<div class="background-glow glow-three"></div>
+<header class="main-header">
+    <div class="header-content">
+        <div class="brand">
+            <img src="/images/livestock-logo.png" alt="Livestock Health Monitor Logo" class="brand-logo">
+            <div class="brand-text">
+                <h1>Livestock Health Monitor</h1>
+                <p>Smart Animal Health & Risk Monitoring System</p>
+            </div>
+        </div>
+        <div class="header-status">
+            <span class="status-dot"></span>
+            <span>System Online</span>
+        </div>
+    </div>
+</header>
+<main class="container">
+    <section class="data-section workflow-section" style="margin-bottom: 28px;">
+        <div class="section-heading">
+            <div>
+                <span class="section-label">PROTOTYPE WORKFLOW</span>
+                <h2>End-to-End Surveillance Process</h2>
+            </div>
+            <div class="live-indicator">
+                <span class="status-dot"></span>
+                Prototype Ready
+            </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <a href="/index.html" class="primary-button ">01 Dashboard</a><span>→</span>
+            <a href="/register.html" class="primary-button ">02 Register Animal</a><span>→</span>
+            <a href="/health-assessment.html" class="primary-button ">03 Health Assessment</a><span>→</span>
+            <a href="/risk-analysis.html" class="primary-button ">04 AI/ML Risk</a><span>→</span>
+            <a href="/map.html" class="primary-button active-page">05 Map</a><span>→</span>
+            <a href="/outbreak.html" class="primary-button ">06 Outbreak</a><span>→</span>
+            <a href="/history.html" class="primary-button ">07 History</a>
+        </div>
+    </section>
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-badge">🐄 SMART LIVESTOCK CARE</span>
+            <h2>Monitor Animal Health. <span>Prevent Risk.</span></h2>
+            <p>Register livestock, monitor health, identify emerging risks and maintain complete animal health history.</p>
+        </div>
+    </section>
+
+    <section id="geospatialSurveillance" class="map-section">
+        <div class="section-heading"><div><span class="section-label">GEOSPATIAL SURVEILLANCE</span><h2>🗺️ Livestock Health Risk Map</h2><p class="map-description">View livestock locations and identify high-risk and at-risk areas across the monitored region.</p></div><div class="live-indicator"><span class="status-dot"></span>Live Mapping</div></div>
+        <div class="map-summary"><div class="map-stat"><span class="map-stat-label">Animals Mapped</span><strong id="mappedAnimals">0</strong></div><div class="map-stat"><span class="map-stat-label">High Risk Locations</span><strong id="mappedHighRisk">0</strong></div><div class="map-stat"><span class="map-stat-label">At Risk Locations</span><strong id="mappedAtRisk">0</strong></div><div class="map-stat"><span class="map-stat-label">Villages Covered</span><strong id="mappedVillages">0</strong></div></div>
+        <div class="map-legend"><span><i class="legend-dot legend-healthy"></i>Healthy</span><span><i class="legend-dot legend-at-risk"></i>At Risk</span><span><i class="legend-dot legend-high-risk"></i>High Risk</span></div>
+        <div id="livestockMap" class="livestock-map"></div><div id="mapMessage" class="map-message"></div>
+    </section>
+</main>
+<footer class="main-footer">
+    <p>Livestock Health Monitor • Smart Animal Health & Risk Monitoring System</p>
+    <span>SIH 2026 Prototype</span>
+</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livestock Health Monitor</title>
+    <link rel="icon" type="image/png" href="/images/livestock-logo.png?v=2">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .workflow-section .primary-button:not(.active-page){background:rgba(12,58,43,.72);color:#effff5;border:1px solid rgba(91,224,159,.20);box-shadow:none}
+        .workflow-section .active-page{background:linear-gradient(135deg,#24a866,#48d888);color:#03130a;border:0;box-shadow:0 8px 25px rgba(40,200,120,.15)}
+        .workflow-section a{text-decoration:none}
+        .workflow-section span{color:#087f5b;font-weight:800;font-size:20px}
+    </style>
+</head>
+<body>
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+<div class="background-glow glow-three"></div>
+<header class="main-header">
+    <div class="header-content">
+        <div class="brand">
+            <img src="/images/livestock-logo.png" alt="Livestock Health Monitor Logo" class="brand-logo">
+            <div class="brand-text">
+                <h1>Livestock Health Monitor</h1>
+                <p>Smart Animal Health & Risk Monitoring System</p>
+            </div>
+        </div>
+        <div class="header-status">
+            <span class="status-dot"></span>
+            <span>System Online</span>
+        </div>
+    </div>
+</header>
+<main class="container">
+    <section class="data-section workflow-section" style="margin-bottom: 28px;">
+        <div class="section-heading">
+            <div>
+                <span class="section-label">PROTOTYPE WORKFLOW</span>
+                <h2>End-to-End Surveillance Process</h2>
+            </div>
+            <div class="live-indicator">
+                <span class="status-dot"></span>
+                Prototype Ready
+            </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <a href="/index.html" class="primary-button ">01 Dashboard</a><span>→</span>
+            <a href="/register.html" class="primary-button ">02 Register Animal</a><span>→</span>
+            <a href="/health-assessment.html" class="primary-button active-page">03 Health Assessment</a><span>→</span>
+            <a href="/risk-analysis.html" class="primary-button ">04 AI/ML Risk</a><span>→</span>
+            <a href="/map.html" class="primary-button ">05 Map</a><span>→</span>
+            <a href="/outbreak.html" class="primary-button ">06 Outbreak</a><span>→</span>
+            <a href="/history.html" class="primary-button ">07 History</a>
+        </div>
+    </section>
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-badge">🐄 SMART LIVESTOCK CARE</span>
+            <h2>Monitor Animal Health. <span>Prevent Risk.</span></h2>
+            <p>Register livestock, monitor health, identify emerging risks and maintain complete animal health history.</p>
+        </div>
+    </section>
+
+    <section id="healthAssessment" class="form-section">
+        <div class="section-heading"><div><span class="section-label">HEALTH ANALYSIS</span><h2>🩺 Analyze Animal Health</h2></div></div>
+        <form id="healthForm">
+            <div class="form-group"><label for="livestockSelect">Select Livestock</label><select id="livestockSelect" required><option value="">Select an animal</option></select></div>
+            <div class="form-group"><label for="temperature">Temperature (°C)</label><input type="number" id="temperature" placeholder="Example: 38.5" step="0.1" required></div>
+            <div class="form-group"><label for="symptoms">Symptoms</label><textarea id="symptoms" placeholder="Example: coughing, loss of appetite" required></textarea></div>
+            <div class="form-group"><label for="vaccinationStatus">Vaccination Status</label><select id="vaccinationStatus"><option value="NOT PROVIDED">Select vaccination status</option><option value="UP TO DATE">Up to date</option><option value="PARTIALLY VACCINATED">Partially vaccinated</option><option value="NOT VACCINATED">Not vaccinated</option></select></div>
+            <div class="form-group"><label for="treatment">Treatment / Medication</label><textarea id="treatment" placeholder="Example: Antibiotic treatment given"></textarea></div>
+            <div class="form-group"><label for="reportedBy">Reported By</label><select id="reportedBy"><option value="Farmer">Farmer</option><option value="Field Worker">Field Worker</option><option value="Veterinarian">Veterinarian</option><option value="Para-Veterinary Worker">Para-Veterinary Worker</option></select></div>
+            <div class="form-group"><label for="mortalityReported">Mortality Report</label><select id="mortalityReported"><option value="false">No</option><option value="true">Yes - Animal died</option></select></div>
+            <div class="form-group"><label for="mortalityReason">Mortality / Death Reason</label><textarea id="mortalityReason" placeholder="Example: Sudden death after high fever"></textarea></div>
+            <div id="healthMessage" class="message"></div>
+            <button type="submit" class="primary-button">🩺 Submit Health Assessment</button>
+        </form></section>
+</main>
+<footer class="main-footer">
+    <p>Livestock Health Monitor • Smart Animal Health & Risk Monitoring System</p>
+    <span>SIH 2026 Prototype</span>
+</footer>
+<script src="/script.js"></script>
+</body>
+</html>

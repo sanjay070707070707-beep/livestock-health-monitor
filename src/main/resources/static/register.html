@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livestock Health Monitor</title>
+    <link rel="icon" type="image/png" href="/images/livestock-logo.png?v=2">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .workflow-section .primary-button:not(.active-page){background:rgba(12,58,43,.72);color:#effff5;border:1px solid rgba(91,224,159,.20);box-shadow:none}
+        .workflow-section .active-page{background:linear-gradient(135deg,#24a866,#48d888);color:#03130a;border:0;box-shadow:0 8px 25px rgba(40,200,120,.15)}
+        .workflow-section a{text-decoration:none}
+        .workflow-section span{color:#087f5b;font-weight:800;font-size:20px}
+    </style>
+</head>
+<body>
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+<div class="background-glow glow-three"></div>
+<header class="main-header">
+    <div class="header-content">
+        <div class="brand">
+            <img src="/images/livestock-logo.png" alt="Livestock Health Monitor Logo" class="brand-logo">
+            <div class="brand-text">
+                <h1>Livestock Health Monitor</h1>
+                <p>Smart Animal Health & Risk Monitoring System</p>
+            </div>
+        </div>
+        <div class="header-status">
+            <span class="status-dot"></span>
+            <span>System Online</span>
+        </div>
+    </div>
+</header>
+<main class="container">
+    <section class="data-section workflow-section" style="margin-bottom: 28px;">
+        <div class="section-heading">
+            <div>
+                <span class="section-label">PROTOTYPE WORKFLOW</span>
+                <h2>End-to-End Surveillance Process</h2>
+            </div>
+            <div class="live-indicator">
+                <span class="status-dot"></span>
+                Prototype Ready
+            </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <a href="/index.html" class="primary-button ">01 Dashboard</a><span>→</span>
+            <a href="/register.html" class="primary-button active-page">02 Register Animal</a><span>→</span>
+            <a href="/health-assessment.html" class="primary-button ">03 Health Assessment</a><span>→</span>
+            <a href="/risk-analysis.html" class="primary-button ">04 AI/ML Risk</a><span>→</span>
+            <a href="/map.html" class="primary-button ">05 Map</a><span>→</span>
+            <a href="/outbreak.html" class="primary-button ">06 Outbreak</a><span>→</span>
+            <a href="/history.html" class="primary-button ">07 History</a>
+        </div>
+    </section>
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-badge">🐄 SMART LIVESTOCK CARE</span>
+            <h2>Monitor Animal Health. <span>Prevent Risk.</span></h2>
+            <p>Register livestock, monitor health, identify emerging risks and maintain complete animal health history.</p>
+        </div>
+    </section>
+
+    <section id="registerLivestock" class="form-section">
+        <div class="section-heading"><div><span class="section-label">ANIMAL REGISTRATION</span><h2>🐄 Register Livestock</h2></div></div>
+        <form id="livestockForm">
+            <div class="form-group"><label for="tagNumber">Tag Number</label><input type="text" id="tagNumber" placeholder="Example: COW001" required></div>
+            <div class="form-group"><label for="animalType">Animal Type</label><input type="text" id="animalType" placeholder="Example: Cow" required></div>
+            <div class="form-group"><label for="breed">Breed</label><input type="text" id="breed" placeholder="Example: Jersey" required></div>
+            <div class="form-group"><label for="age">Age</label><input type="number" id="age" placeholder="Example: 4" min="0" required></div>
+            <div class="form-group"><label for="gender">Gender</label><select id="gender" required><option value="">Select gender</option><option value="Female">Female</option><option value="Male">Male</option></select></div>
+            <div class="form-group"><label for="village">Village</label><input type="text" id="village" placeholder="Example: Kovilpatti" required></div>
+            <div class="form-group"><label for="block">Block</label><input type="text" id="block" placeholder="Example: Kovilpatti" required></div>
+            <div class="form-group"><label for="district">District</label><input type="text" id="district" placeholder="Example: Thoothukudi" required></div>
+            <div class="form-group"><label for="latitude">Latitude</label><input type="number" id="latitude" placeholder="Example: 9.1715" step="any"></div>
+            <div class="form-group"><label for="longitude">Longitude</label><input type="number" id="longitude" placeholder="Example: 77.8699" step="any"></div>
+            <div id="livestockMessage" class="message"></div>
+            <button type="submit" class="primary-button">🐄 Register Livestock</button>
+        </form>
+        <!-- REGISTERED LIVESTOCK -->
+        <section class="data-section" style="margin-top: 28px;">
+
+            <div class="section-heading">
+                <div>
+                    <span class="section-label">REGISTERED ANIMALS</span>
+                    <h2>🐄 Livestock Records</h2>
+                </div>
+
+                <div class="live-indicator">
+                    <span class="status-dot"></span>
+                    Live Data
+                </div>
+            </div>
+
+            <div id="livestockList">
+
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p>Loading livestock...</p>
+                </div>
+
+            </div>
+
+        </section>
+    </section>
+</main>
+<footer class="main-footer">
+    <p>Livestock Health Monitor • Smart Animal Health & Risk Monitoring System</p>
+    <span>SIH 2026 Prototype</span>
+</footer>
+<script src="/script.js"></script>
+</body>
+</html>
